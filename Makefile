@@ -1,6 +1,6 @@
 .PHONY : clean
 
-CFLAGS = -g -fPIC -pedantic -Wall -Wextra
+CFLAGS = -g -fPIC -Wall -Wextra
 
 all: timemachine.so
 

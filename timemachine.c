@@ -9,11 +9,9 @@
 
 #define OFFSET "TIME_MACHINE_OFFSET"
 
-static void init(void) __attribute__((constructor));
-
 time_t offset = 0;
 
-static void init(void) {
+static void __attribute__((constructor)) init(void) {
 	char* offset_text = getenv(OFFSET);
 	if (offset_text != NULL) {
 		long offset_value = strtol(offset_text, NULL, 10);
@@ -26,10 +24,12 @@ static void init(void) {
 	}
 }
 
+typedef time_t (*func_time_t)(time_t*);
+
 time_t time(time_t *tloc) {
-	static time_t (*func)(time_t*);
-	if(func == NULL) {
-		func = (time_t (*)(time_t*)) dlsym(RTLD_NEXT, "time");
+	static func_time_t func;
+	if (func == NULL) {
+		func = (func_time_t) dlsym(RTLD_NEXT, "time");
 	}
 	if (tloc != NULL) {
 		*tloc += offset;
@@ -38,10 +38,12 @@ time_t time(time_t *tloc) {
 	return res;
 }
 
+typedef int (*func_clock_gettime_t)(clockid_t, struct timespec*);
+
 int clock_gettime(clockid_t clk_id, struct timespec *res) {
-	static int (*func)(clockid_t, struct timespec*);
+	static func_clock_gettime_t func;
 	if(func == NULL) {
-		func = (int (*)(clockid_t, struct timespec*)) dlsym(RTLD_NEXT, "clock_gettime");
+		func = (func_clock_gettime_t) dlsym(RTLD_NEXT, "clock_gettime");
 	}
 	int err = func(clk_id, res);
 	if (res != NULL) {
@@ -50,10 +52,12 @@ int clock_gettime(clockid_t clk_id, struct timespec *res) {
 	return err;
 }
 
+typedef int (*func_gettimeofday_t)(struct timeval*, struct timezone*);
+
 int gettimeofday(struct timeval *tv, struct timezone *tz) {
-	static int (*func)(struct timeval*, struct timezone*);
+	static func_gettimeofday_t func;
 	if(func == NULL) {
-		func = (int (*)(struct timeval*, struct timezone*)) dlsym(RTLD_NEXT, "gettimeofday");
+		func = (func_gettimeofday_t) dlsym(RTLD_NEXT, "gettimeofday");
 	}
 	int err = func(tv, tz);
 	tv->tv_sec += offset;
