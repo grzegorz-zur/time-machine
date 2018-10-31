@@ -3,9 +3,8 @@
 #include <unistd.h>
 
 int main() {
-	while (1) {
-		printf("%ld\n", time(NULL));
-		sleep(1);
-	}
-	return 0;
+    do {
+        printf("%ld\n", time(NULL));
+    } while (!sleep(1));
+    return 0;
 }
