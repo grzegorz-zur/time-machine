@@ -3,8 +3,10 @@
 #include <unistd.h>
 
 int main() {
+    time_t t;
     do {
-        printf("%ld\n", time(NULL));
+        t = time(NULL);
+        printf("%ld\t%s", t, ctime(&t));
     } while (!sleep(1));
     return 0;
 }
