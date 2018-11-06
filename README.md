@@ -11,6 +11,12 @@ Tool for manipulating time in running processes.
 
 Load `timemachine.so` into dynamically linked program with LD_PRELOAD. Set time offset in seconds in TIME_MACHINE_OFFSET environment variable.
 
-### Example
+	LD_PRELOAD=./timemachine.so TIME_MACHINE_OFFSET=3153600000 date
 
-LD_PRELOAD=./timemachine.so TIME_MACHINE_OFFSET=3153600000 date
+Manipulate time by writing either positive or negative offset in secconds to /tmp/timemachine/<pid>/set.
+
+	echo 123 > /tmp/timemachine/9876/set
+
+Check effective offset by reading file /tmp/timemachine/9876/get.
+
+	cat /tmp/timemachine/9876/get
