@@ -13,10 +13,10 @@ Load `timemachine.so` into dynamically linked program with LD_PRELOAD. Set time 
 
 	LD_PRELOAD=./timemachine.so TIME_MACHINE_OFFSET=3153600000 date
 
-Manipulate time by writing either positive or negative offset in secconds to /tmp/timemachine/<pid>/set.
+Manipulate time by writing either positive or negative offset in secconds to `/tmp/timemachine/PID/set`.
 
 	echo 123 > /tmp/timemachine/9876/set
 
-Check effective offset by reading file /tmp/timemachine/9876/get.
+Check effective offset by reading file `/tmp/timemachine/PID/get`.
 
 	cat /tmp/timemachine/9876/get
