@@ -67,7 +67,7 @@ static void* run(__attribute__((unused)) void* arg) {
 __attribute__((constructor (101)))
 static void values() {
     pid = getpid();
-    asprintf(&dir, "%s/%d", BASE, pid);
+    asprintf(&dir, "%s-%d", BASE, pid);
     asprintf(&get, "%s/%s", dir, GET);
     asprintf(&set, "%s/%s", dir, SET);
 }
@@ -84,28 +84,18 @@ static void env() {
 }
 
 __attribute__((constructor (103)))
-static void create_base() {
-    if (mkdir(BASE, 0777) < 0) {
-        if (errno == EEXIST) {
-            return;
-        }
-        error(0, errno, "%s: error creating base directory '%s'", NAME, BASE);
-    }
-}
-
-__attribute__((constructor (104)))
 static void create_dir() {
-    if (mkdir(dir, 0755) < 0) {
+    if (mkdir(dir, 0775) < 0) {
         error(0, errno, "%s: error creating process directory '%s'", NAME, dir);
     }
 }
 
-__attribute__((constructor (105)))
+__attribute__((constructor (104)))
 static void create_get() {
     write_offset();
 }
 
-__attribute__((constructor (106)))
+__attribute__((constructor (105)))
 static void create_set() {
     if (mkfifo(set, 0660) < 0) {
         error(0, errno, "%s: error creating file '%s'", NAME, set);
