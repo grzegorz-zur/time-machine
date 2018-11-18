@@ -1,9 +1,8 @@
 #define _GNU_SOURCE
 
-#include <fcntl.h>
+#include <dlfcn.h>
 #include <errno.h>
 #include <error.h>
-#include <dlfcn.h>
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -12,10 +11,8 @@
 
 #include <sys/stat.h>
 #include <sys/time.h>
-#include <sys/types.h>
 
 #define NAME "timemachine"
-#define BASE "/tmp/timemachine"
 #define ENV "TIME_MACHINE_OFFSET"
 #define GET "get"
 #define SET "set"
@@ -33,7 +30,7 @@ static void write_offset() {
         error(0, errno, "%s: error opening file '%s'", NAME, get);
         return;
     }
-    if (fprintf(file, "%ld\n", offset) <= 0) {
+    if (fprintf(file, "%ld", offset) <= 0) {
         error(0, errno, "%s: error writing file '%s'", NAME, get);
     }
     if (fclose(file) == EOF) {
@@ -47,7 +44,7 @@ static void read_offset() {
         error(0, errno, "%s: error opening file '%s'", NAME, set);
         return;
     }
-    if (fscanf(file, "%ld\n", &offset) <= 0) {
+    if (fscanf(file, "%ld", &offset) <= 0) {
         error(0, errno, "%s: error reading file '%s'", NAME, set);
     }
     if (fclose(file) == EOF) {
@@ -67,7 +64,7 @@ static void* run(__attribute__((unused)) void* arg) {
 __attribute__((constructor (101)))
 static void values() {
     pid = getpid();
-    asprintf(&dir, "%s-%d", BASE, pid);
+    asprintf(&dir, "%s/%s-%d", P_tmpdir, NAME, pid);
     asprintf(&get, "%s/%s", dir, GET);
     asprintf(&set, "%s/%s", dir, SET);
 }
@@ -78,7 +75,7 @@ static void env() {
     if (text == NULL) {
         return;
     }
-    if (sscanf(text, "%ld\n", &offset) <= 0) {
+    if (sscanf(text, "%ld", &offset) <= 0) {
         error(0, errno, "%s: error parsing value '%s'", NAME, text);
     }
 }
