@@ -20,3 +20,5 @@ Manipulate time by writing either positive or negative offset in secconds to `/t
 Check effective offset by reading file `/tmp/timemachine-PID/get`.
 
 	cat /tmp/timemachine-9876/get
+
+Log errors by setting TIME_MACHINE_LOG environnment variable to any value.
